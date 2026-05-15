@@ -6,55 +6,254 @@ import { supabase } from "../lib/supabase"
 
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
   <title>Dashboard</title>
+
+  <style>
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      color: #111;
+      padding: 40px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      margin-bottom: 30px;
+    }
+
+    h1 {
+      font-size: 32px;
+    }
+
+    .logout {
+      border: none;
+      background: #111;
+      color: white;
+
+      padding: 10px 16px;
+      border-radius: 10px;
+
+      cursor: pointer;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 25px;
+
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+
+      margin-bottom: 25px;
+    }
+
+    .inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 12px;
+
+      margin-bottom: 15px;
+    }
+
+    input {
+      padding: 12px;
+
+      border: 1px solid #ddd;
+      border-radius: 10px;
+
+      font-size: 14px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #111;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    button {
+      border: none;
+      background: #111;
+      color: white;
+
+      padding: 12px 16px;
+      border-radius: 10px;
+
+      cursor: pointer;
+
+      font-size: 14px;
+    }
+
+    button:hover {
+      opacity: 0.92;
+    }
+
+    .secondary {
+      background: #e9e9e9;
+      color: #111;
+    }
+
+    .recomendacion {
+      margin-top: 20px;
+
+      padding: 15px;
+      border-radius: 10px;
+
+      background: #f1f1f1;
+
+      font-size: 15px;
+    }
+
+    .tasks {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .task {
+      background: white;
+
+      border-radius: 14px;
+
+      padding: 18px;
+
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+    }
+
+    .task-info h3 {
+      margin-bottom: 6px;
+      font-size: 18px;
+    }
+
+    .task-info p {
+      color: #666;
+      font-size: 14px;
+    }
+
+    .task button {
+      background: #111;
+    }
+
+    @media (max-width: 700px) {
+
+      body {
+        padding: 20px;
+      }
+
+      .inputs {
+        grid-template-columns: 1fr;
+      }
+
+      .buttons {
+        flex-direction: column;
+      }
+
+      .task {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 14px;
+      }
+
+    }
+
+  </style>
 </head>
 
 <body>
 
-  <h1>Mis tareas</h1>
+  <div class="container">
 
-  <button onclick="logout()">
-    Cerrar sesión
-  </button>
+    <div class="topbar">
 
-  <hr>
+      <h1>
+        Mis tareas
+      </h1>
 
-  <input
-    id="titulo"
-    placeholder="Título tarea"
-  />
+      <button
+        class="logout"
+        onclick="logout()"
+      >
+        Cerrar sesión
+      </button>
 
-  <br><br>
+    </div>
 
-  <input
-    id="prioridad"
-    type="number"
-    placeholder="Prioridad 1-3"
-  />
+    <div class="card">
 
-  <br><br>
+      <div class="inputs">
 
-  <input
-    id="tiempo"
-    type="number"
-    placeholder="Tiempo en minutos"
-  />
+        <input
+          id="titulo"
+          placeholder="Título tarea"
+        />
 
-  <br><br>
+        <input
+          id="prioridad"
+          type="number"
+          placeholder="Prioridad 1-3"
+        />
 
-  <button onclick="crear()">
-    Crear tarea
-  </button>
+        <input
+          id="tiempo"
+          type="number"
+          placeholder="Tiempo en minutos"
+        />
 
-  <button onclick="recomendar()">
-    ¿Qué hago ahora?
-  </button>
+      </div>
 
-  <h2 id="recomendacion"></h2>
+      <div class="buttons">
 
-  <hr>
+        <button onclick="crear()">
+          Crear tarea
+        </button>
 
-  <ul id="lista"></ul>
+        <button
+          class="secondary"
+          onclick="recomendar()"
+        >
+          ¿Qué hago ahora?
+        </button>
+
+      </div>
+
+      <div
+        id="recomendacion"
+        class="recomendacion"
+      >
+      </div>
+
+    </div>
+
+    <div
+      id="lista"
+      class="tasks"
+    >
+    </div>
+
+  </div>
 
   <script type="module">
 
@@ -83,21 +282,37 @@ import { supabase } from "../lib/supabase"
 
       data.forEach(tarea => {
 
-        const li =
-          document.createElement("li")
+        const div =
+          document.createElement("div")
 
-        li.innerHTML = `
-          ${tarea.titulo}
-          | prioridad: ${tarea.prioridad}
-          | estado: ${tarea.estado}
+        div.className = "task"
+
+        div.innerHTML = `
+          
+          <div class="task-info">
+
+            <h3>
+              ${tarea.titulo}
+            </h3>
+
+            <p>
+              Prioridad: ${tarea.prioridad}
+              •
+              Estado: ${tarea.estado}
+            </p>
+
+          </div>
 
           <button onclick="completar('${tarea.id}')">
             Completar
           </button>
+
         `
 
-        lista.appendChild(li)
+        lista.appendChild(div)
+
       })
+
     }
 
     async function crear() {
@@ -131,6 +346,7 @@ import { supabase } from "../lib/supabase"
         ])
 
       cargar()
+
     }
 
     async function completar(id) {
@@ -143,6 +359,7 @@ import { supabase } from "../lib/supabase"
         .eq("id", id)
 
       cargar()
+
     }
 
     function elegirTarea(tareas) {
@@ -159,6 +376,7 @@ import { supabase } from "../lib/supabase"
       )
 
       return pendientes[0]
+
     }
 
     async function recomendar() {
@@ -179,15 +397,18 @@ import { supabase } from "../lib/supabase"
       if (tarea) {
 
         texto.innerText =
-          "Hacé esta tarea: " +
+          "Hacé esta tarea ahora: " +
           tarea.titulo
+
       }
 
       else {
 
         texto.innerText =
           "No hay tareas pendientes"
+
       }
+
     }
 
     async function logout() {
@@ -195,6 +416,7 @@ import { supabase } from "../lib/supabase"
       await supabase.auth.signOut()
 
       window.location.href = "/"
+
     }
 
     window.crear = crear
