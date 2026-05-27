@@ -1,0 +1,315 @@
+---
+import { supabase } from '../supabase.js'
+
+let error = ''
+let success = false
+
+if (Astro.request.method === 'POST') {
+  try {
+    const data = await Astro.request.formData()
+    const email = data.get('email')
+    const password = data.get('password')
+    const confirmPassword = data.get('confirmPassword')
+
+    // Validaciones
+    if (!email || !password || !confirmPassword) {
+      error = 'Por favor completa todos los campos'
+    } else if (password.length < 6) {
+      error = 'La contraseña debe tener al menos 6 caracteres'
+    } else if (password !== confirmPassword) {
+      error = 'Las contraseñas no coinciden'
+    } else {
+      const { error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+      })
+
+      if (authError) {
+        error = authError.message || 'Error al registrar el usuario'
+      } else {
+        success = true
+      }
+    }
+  } catch (err) {
+    error = 'Error al procesar el registro'
+  }
+}
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro - Radiant Remnant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="container">
+    <div class="form-wrapper">
+      <div class="form-header">
+        <h1>🌟 Crear Cuenta</h1>
+        <p>Únete a Celestial Crater</p>
+      </div>
+
+      {success && (
+        <div class="alert alert-success">
+          ✅ Cuenta creada exitosamente. Por favor verifica tu email y <a href="/login">inicia sesión</a>.
+        </div>
+      )}
+
+      {error && (
+        <div class="alert alert-error">
+          ❌ {error}
+        </div>
+      )}
+
+      <form method="POST" class="form">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            placeholder="tu@email.com" 
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="password">Contraseña</label>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            placeholder="Mínimo 6 caracteres" 
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="confirmPassword">Confirmar Contraseña</label>
+          <input 
+            type="password" 
+            id="confirmPassword" 
+            name="confirmPassword" 
+            placeholder="Repite tu contraseña" 
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-primary">Registrarse</button>
+      </form>
+
+      <div class="form-footer">
+        <p>¿Ya tienes cuenta? <a href="/login">Inicia sesión aquí</a></p>
+      </div>
+    </div>
+  </div>
+
+  <style>
+    :root {
+      --color-primary: #3245ff;
+      --color-secondary: #bc52ee;
+      --color-dark: #0f172a;
+      --color-light: #f8fafc;
+      --color-gray: #64748b;
+      --color-border: #e2e8f0;
+      --color-success: #10b981;
+      --color-error: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, var(--color-light) 0%, #f1f5f9 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(50, 69, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(188, 82, 238, 0.1) 0%, transparent 50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .form-wrapper {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--color-border);
+      padding: 2rem;
+      box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+      animation: slideUp 0.6s ease-out;
+    }
+
+    .form-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .form-header h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-header p {
+      color: var(--color-gray);
+      font-size: 0.95rem;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #059669;
+    }
+
+    .alert-success a {
+      color: #059669;
+      text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #dc2626;
+    }
+
+    .form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: var(--color-dark);
+      font-size: 0.95rem;
+    }
+
+    .form-group input {
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 1rem;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(50, 69, 255, 0.1);
+    }
+
+    .btn-primary {
+      padding: 0.875rem 1.5rem;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 10px 30px rgba(50, 69, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 15px 40px rgba(50, 69, 255, 0.4);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .form-footer {
+      text-align: center;
+      color: var(--color-gray);
+      font-size: 0.9rem;
+    }
+
+    .form-footer a {
+      color: var(--color-primary);
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.3s;
+    }
+
+    .form-footer a:hover {
+      text-decoration: underline;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .form-wrapper {
+        padding: 1.5rem;
+      }
+
+      .form-header h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</body>
+</html>

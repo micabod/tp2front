@@ -1,71 +1,526 @@
 ---
-import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout>
-	<main>
-		<section id="hero">
-			<h1>Welcome to Astro</h1>
-			<section id="links">
-			</section>
-		</section>
-	</main>
-</Layout>
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radiant Remnant - Celestial Crater</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <div class="container">
+    <main>
+      <section id="hero">
+        <div class="hero-wrapper">
+          <div class="badge">✨ Aplicación de Hábitos</div>
+          
+          <h1>Bienvenido a <span class="gradient-text">Celestial Crater</span></h1>
+          
+          <p class="subtitle">
+            Gestiona y realiza seguimiento de tus hábitos diarios. Una aplicación serverless construida con Astro y Supabase.
+          </p>
 
-<style>
-	main {
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		height: 100%;
-	}
+          <div id="action-links">
+            <a href="/register" class="button button-primary">
+              🚀 Comenzar
+            </a>
+            <a href="/login" class="button button-secondary">
+              🔐 Iniciar Sesión
+            </a>
+          </div>
+        </div>
+      </section>
 
-	#hero {
-		text-align: center;
-		padding: 2rem;
-	}
+      <!-- Sección Features -->
+      <section id="features">
+        <div class="section-header">
+          <h2>¿Por qué Celestial Crater?</h2>
+          <p>Características para maximizar tu productividad</p>
+        </div>
 
-	h1 {
-		font-size: 2.5rem;
-		margin: 0 0 1rem;
-	}
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Seguimiento Visual</h3>
+            <p>Visualiza tu progreso diariamente y mantente motivado con un dashboard intuitivo.</p>
+          </div>
 
-	p {
-		font-size: 1.1rem;
-		margin-bottom: 2rem;
-	}
+          <div class="feature-card">
+            <div class="feature-icon">🔐</div>
+            <h3>100% Seguro</h3>
+            <p>Tus datos están seguros en Supabase con autenticación y encriptación de nivel empresarial.</p>
+          </div>
 
-	code {
-		background: #f0f0f0;
-		padding: 0.2rem 0.5rem;
-		border-radius: 4px;
-	}
+          <div class="feature-card">
+            <div class="feature-icon">⚡</div>
+            <h3>Súper Rápido</h3>
+            <p>Aplicación construida con Astro para rendimiento máximo y tiempos de carga instantáneos.</p>
+          </div>
 
-	#links {
-		display: flex;
-		gap: 1rem;
-		justify-content: center;
-		flex-wrap: wrap;
-	}
+          <div class="feature-card">
+            <div class="feature-icon">📱</div>
+            <h3>Responsive</h3>
+            <p>Accede desde cualquier dispositivo. Funciona perfectamente en móvil, tablet y desktop.</p>
+          </div>
 
-	#links a {
-		padding: 0.75rem 1.5rem;
-		text-decoration: none;
-		border-radius: 8px;
-		transition: all 0.2s;
-		color: #111827;
-	}
+          <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Fácil de Usar</h3>
+            <p>Interfaz intuitiva que cualquiera puede usar. Sin curva de aprendizaje complicada.</p>
+          </div>
 
-	#links a.button {
-		background: linear-gradient(83.21deg, #3245ff 0%, #bc52ee 100%);
-		color: white;
-	}
+          <div class="feature-card">
+            <div class="feature-icon">☁️</div>
+            <h3>En la Nube</h3>
+            <p>Sin instalación. Accede desde cualquier navegador. Tu información siempre disponible.</p>
+          </div>
+        </div>
+      </section>
 
-	#links a.button:hover {
-		transform: scale(1.05);
-	}
+      <!-- Sección How It Works -->
+      <section id="how-it-works">
+        <div class="section-header">
+          <h2>Cómo Funciona</h2>
+          <p>Tres pasos simples para empezar</p>
+        </div>
 
-	#links a:hover {
-		opacity: 0.8;
-	}
-</style>
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Crea tu Cuenta</h3>
+            <p>Regístrate con tu email y crea una contraseña segura en menos de 1 minuto.</p>
+          </div>
+
+          <div class="step-arrow">→</div>
+
+          <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Define tus Hábitos</h3>
+            <p>Añade los hábitos que deseas desarrollar: ejercicio, lectura, meditación, etc.</p>
+          </div>
+
+          <div class="step-arrow">→</div>
+
+          <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Realiza Seguimiento</h3>
+            <p>Marca tus hábitos completados y observa tu progreso a lo largo del tiempo.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Final -->
+      <section id="cta">
+        <div class="cta-content">
+          <h2>Comienza Hoy Mismo</h2>
+          <p>No necesitas tarjeta de crédito. Completamente gratis.</p>
+          <a href="/register" class="button button-large">Registrarse Ahora</a>
+        </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <p>&copy; 2024 Radiant Remnant - Celestial Crater. Proyecto académico.</p>
+      <p>Tecnologías: Astro | Supabase | Vercel</p>
+    </footer>
+  </div>
+
+  <style>
+    :root {
+      --color-primary: #3245ff;
+      --color-secondary: #bc52ee;
+      --color-accent: #f041ff;
+      --color-dark: #0f172a;
+      --color-light: #f8fafc;
+      --color-gray: #64748b;
+      --color-border: #e2e8f0;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--color-light);
+      color: var(--color-dark);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(50, 69, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(188, 82, 238, 0.1) 0%, transparent 50%);
+      z-index: -1;
+      pointer-events: none;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+    }
+
+    main {
+      position: relative;
+    }
+
+    /* HERO SECTION */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4rem 2rem;
+      position: relative;
+    }
+
+    .hero-wrapper {
+      max-width: 800px;
+      text-align: center;
+      animation: fadeInUp 1s ease-out;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.5rem 1.25rem;
+      background: linear-gradient(135deg, rgba(50, 69, 255, 0.1) 0%, rgba(188, 82, 238, 0.1) 100%);
+      border: 1px solid rgba(50, 69, 255, 0.2);
+      border-radius: 50px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--color-primary);
+      margin-bottom: 2rem;
+    }
+
+    #hero h1 {
+      font-size: clamp(2.5rem, 8vw, 4.5rem);
+      font-weight: 800;
+      margin: 0 0 1rem;
+      line-height: 1.1;
+    }
+
+    .gradient-text {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 50%, var(--color-accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: inline-block;
+    }
+
+    .subtitle {
+      font-size: 1.25rem;
+      color: var(--color-gray);
+      line-height: 1.7;
+      margin: 0 0 3rem;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #action-links {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      border-radius: 12px;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: none;
+      cursor: pointer;
+    }
+
+    .button-primary {
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      color: white;
+      box-shadow: 0 10px 30px rgba(50, 69, 255, 0.3);
+    }
+
+    .button-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 40px rgba(50, 69, 255, 0.4);
+    }
+
+    .button-secondary {
+      background: rgba(255, 255, 255, 0.8);
+      color: var(--color-primary);
+      border: 2px solid var(--color-border);
+      backdrop-filter: blur(10px);
+    }
+
+    .button-secondary:hover {
+      background: white;
+      border-color: var(--color-primary);
+      transform: translateY(-3px);
+    }
+
+    .button-large {
+      padding: 1.25rem 2.5rem;
+      font-size: 1.125rem;
+    }
+
+    /* FEATURES SECTION */
+    #features {
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .section-header {
+      text-align: center;
+      margin-bottom: 4rem;
+      animation: fadeInUp 1s ease-out 0.2s both;
+    }
+
+    .section-header h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0 0 1rem;
+    }
+
+    .section-header p {
+      font-size: 1.125rem;
+      color: var(--color-gray);
+      margin: 0;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      padding: 2rem;
+      background: white;
+      border-radius: 16px;
+      border: 1px solid var(--color-border);
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-8px);
+      border-color: var(--color-primary);
+      box-shadow: 0 15px 40px rgba(50, 69, 255, 0.15);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0 0 0.75rem;
+    }
+
+    .feature-card p {
+      font-size: 0.95rem;
+      color: var(--color-gray);
+      margin: 0;
+      line-height: 1.6;
+    }
+
+    /* HOW IT WORKS */
+    #how-it-works {
+      padding: 6rem 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .steps-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+      margin-top: 3rem;
+    }
+
+    .step-card {
+      flex: 1;
+      min-width: 280px;
+      max-width: 300px;
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      text-align: center;
+      transition: all 0.3s;
+    }
+
+    .step-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 10px 30px rgba(50, 69, 255, 0.15);
+    }
+
+    .step-number {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      color: white;
+      font-size: 1.75rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-card h3 {
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+    }
+
+    .step-card p {
+      color: var(--color-gray);
+      font-size: 0.95rem;
+      line-height: 1.5;
+    }
+
+    .step-arrow {
+      font-size: 2rem;
+      color: var(--color-primary);
+      font-weight: 700;
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    /* CTA SECTION */
+    #cta {
+      padding: 6rem 2rem;
+      text-align: center;
+      background: linear-gradient(135deg, rgba(50, 69, 255, 0.05) 0%, rgba(188, 82, 238, 0.05) 100%);
+      border-top: 1px solid var(--color-border);
+    }
+
+    .cta-content {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    #cta h2 {
+      font-size: 2.5rem;
+      font-weight: 800;
+      margin: 0 0 1rem;
+    }
+
+    #cta p {
+      font-size: 1.125rem;
+      color: var(--color-gray);
+      margin: 0 0 2rem;
+    }
+
+    /* FOOTER */
+    .footer {
+      background: var(--color-dark);
+      color: white;
+      text-align: center;
+      padding: 2rem;
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    .footer p {
+      margin: 0.5rem 0;
+    }
+
+    /* ANIMACIONES */
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.5;
+      }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      #hero {
+        min-height: auto;
+        padding: 3rem 1.5rem;
+      }
+
+      #hero h1 {
+        font-size: 2.5rem;
+      }
+
+      .subtitle {
+        font-size: 1rem;
+      }
+
+      #action-links {
+        flex-direction: column;
+      }
+
+      .button {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .section-header h2 {
+        font-size: 2rem;
+      }
+
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+
+      #features,
+      #how-it-works,
+      #cta {
+        padding: 4rem 1.5rem;
+      }
+
+      .steps-container {
+        gap: 1rem;
+      }
+
+      .step-arrow {
+        transform: rotate(90deg);
+      }
+
+      #cta h2 {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</body>
+</html>

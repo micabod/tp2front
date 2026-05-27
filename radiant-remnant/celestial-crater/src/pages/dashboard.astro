@@ -1,0 +1,623 @@
+---
+import { supabase } from '../supabase.js'
+
+// Obtener la sesión actual
+const session = await supabase.auth.getSession()
+
+if (!session.data.session) {
+  return Astro.redirect('/login')
+}
+
+const userId = session.data.session.user.id
+let habits = []
+let error = ''
+let success = ''
+
+// GET - Obtener hábitos del usuario
+try {
+  const { data, error: fetchError } = await supabase
+    .from('habits')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+
+  if (fetchError) {
+    error = 'Error al cargar los hábitos'
+  } else {
+    habits = data || []
+  }
+} catch (err) {
+  error = 'Error al cargar los hábitos'
+}
+
+// POST - Crear nuevo hábito
+if (Astro.request.method === 'POST') {
+  try {
+    const formData = await Astro.request.formData()
+    const action = formData.get('action')
+
+    if (action === 'create') {
+      const title = formData.get('title')
+      const description = formData.get('description')
+      const frequency = formData.get('frequency')
+      const color = formData.get('color')
+
+      if (!title) {
+        error = 'El título del hábito es requerido'
+      } else {
+        const { error: insertError } = await supabase
+          .from('habits')
+          .insert([{
+            user_id: userId,
+            title,
+            description,
+            frequency,
+            color,
+          }])
+
+        if (insertError) {
+          error = 'Error al crear el hábito'
+        } else {
+          success = 'Hábito creado exitosamente'
+          // Recargar hábitos
+          const { data, error: fetchError } = await supabase
+            .from('habits')
+            .select('*')
+            .eq('user_id', userId)
+            .order('created_at', { ascending: false })
+
+          if (!fetchError) {
+            habits = data || []
+          }
+        }
+      }
+    }
+
+    if (action === 'delete') {
+      const habitId = formData.get('habitId')
+
+      const { error: deleteError } = await supabase
+        .from('habits')
+        .delete()
+        .eq('id', habitId)
+        .eq('user_id', userId)
+
+      if (deleteError) {
+        error = 'Error al eliminar el hábito'
+      } else {
+        success = 'Hábito eliminado'
+        habits = habits.filter(h => h.id !== habitId)
+      }
+    }
+  } catch (err) {
+    error = 'Error al procesar la solicitud'
+  }
+}
+---
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard - Radiant Remnant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-container">
+      <a href="/dashboard" class="navbar-brand">
+        <span class="brand-icon">🌟</span>
+        Celestial Crater
+      </a>
+      <ul class="navbar-menu">
+        <li><a href="/dashboard">Dashboard</a></li>
+        <li><a href="/profile">Perfil</a></li>
+        <li><a href="/api/logout">Salir</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="header">
+      <h1>Mis Hábitos</h1>
+      <p>Gestiona y realiza seguimiento de tus hábitos diarios</p>
+    </div>
+
+    {success && (
+      <div class="alert alert-success">
+        ✅ {success}
+      </div>
+    )}
+
+    {error && (
+      <div class="alert alert-error">
+        ❌ {error}
+      </div>
+    )}
+
+    <div class="content-grid">
+      <!-- Formulario para crear hábito -->
+      <section class="form-section">
+        <h2>Crear Nuevo Hábito</h2>
+        <form method="POST" class="habit-form">
+          <input type="hidden" name="action" value="create" />
+          
+          <div class="form-group">
+            <label for="title">Título del Hábito</label>
+            <input 
+              type="text" 
+              id="title" 
+              name="title" 
+              placeholder="Ej: Hacer ejercicio" 
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="description">Descripción</label>
+            <textarea 
+              id="description" 
+              name="description" 
+              placeholder="Describe tu hábito..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <label for="frequency">Frecuencia</label>
+              <select id="frequency" name="frequency">
+                <option value="daily">Diario</option>
+                <option value="weekly">Semanal</option>
+                <option value="monthly">Mensual</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label for="color">Color</label>
+              <div class="color-picker">
+                <input type="color" id="color" name="color" value="#3245ff" />
+              </div>
+            </div>
+          </div>
+
+          <button type="submit" class="btn-primary">➕ Crear Hábito</button>
+        </form>
+      </section>
+
+      <!-- Lista de hábitos -->
+      <section class="habits-section">
+        <h2>Tus Hábitos ({habits.length})</h2>
+        
+        {habits.length === 0 ? (
+          <div class="empty-state">
+            <p>No tienes hábitos aún</p>
+            <small>Crea tu primer hábito en el formulario de la izquierda</small>
+          </div>
+        ) : (
+          <div class="habits-list">
+            {habits.map((habit) => (
+              <div class="habit-card" style={`border-left: 4px solid ${habit.color}`}>
+                <div class="habit-header">
+                  <h3>{habit.title}</h3>
+                  <form method="POST" class="delete-form">
+                    <input type="hidden" name="action" value="delete" />
+                    <input type="hidden" name="habitId" value={habit.id} />
+                    <button type="submit" class="btn-delete" title="Eliminar">🗑️</button>
+                  </form>
+                </div>
+                
+                {habit.description && (
+                  <p class="habit-description">{habit.description}</p>
+                )}
+                
+                <div class="habit-meta">
+                  <span class="badge">
+                    {habit.frequency === 'daily' && '📅 Diario'}
+                    {habit.frequency === 'weekly' && '📆 Semanal'}
+                    {habit.frequency === 'monthly' && '📋 Mensual'}
+                  </span>
+                  <span class="badge badge-date">
+                    Creado: {new Date(habit.created_at).toLocaleDateString('es-AR')}
+                  </span>
+                </div>
+
+                <a href={`/habit/${habit.id}`} class="btn-edit">✏️ Editar</a>
+              </div>
+            ))}
+          </div>
+        )}
+      </section>
+    </div>
+  </main>
+
+  <style>
+    :root {
+      --color-primary: #3245ff;
+      --color-secondary: #bc52ee;
+      --color-dark: #0f172a;
+      --color-light: #f8fafc;
+      --color-gray: #64748b;
+      --color-border: #e2e8f0;
+      --color-success: #10b981;
+      --color-error: #ef4444;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--color-light);
+      color: var(--color-dark);
+      padding-top: 70px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(50, 69, 255, 0.08) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(188, 82, 238, 0.08) 0%, transparent 50%);
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    /* Navbar */
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      border-bottom: 1px solid var(--color-border);
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .navbar-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .navbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--color-dark);
+      text-decoration: none;
+    }
+
+    .brand-icon {
+      font-size: 1.5rem;
+    }
+
+    .navbar-menu {
+      list-style: none;
+      display: flex;
+      gap: 2rem;
+    }
+
+    .navbar-menu a {
+      color: var(--color-gray);
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    .navbar-menu a:hover {
+      color: var(--color-primary);
+    }
+
+    /* Main */
+    main {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .header {
+      margin-bottom: 2rem;
+    }
+
+    .header h1 {
+      font-size: 2rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .header p {
+      color: var(--color-gray);
+      font-size: 1.05rem;
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      animation: slideDown 0.3s ease-out;
+    }
+
+    .alert-success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #059669;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #dc2626;
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    /* Form Section */
+    .form-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-dark);
+    }
+
+    .habit-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .form-group label {
+      font-weight: 600;
+      color: var(--color-dark);
+      font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      padding: 0.75rem;
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 0.95rem;
+      transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      outline: none;
+      border-color: var(--color-primary);
+      box-shadow: 0 0 0 3px rgba(50, 69, 255, 0.1);
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+
+    .color-picker {
+      display: flex;
+      align-items: center;
+    }
+
+    .color-picker input {
+      width: 100%;
+      height: 40px;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+
+    .btn-primary {
+      padding: 0.875rem 1.5rem;
+      background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 12px rgba(50, 69, 255, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(50, 69, 255, 0.4);
+    }
+
+    /* Habits Section */
+    .habits-section {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid var(--color-border);
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+
+    .habits-section h2 {
+      font-size: 1.25rem;
+      margin-bottom: 1.5rem;
+      color: var(--color-dark);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 3rem 1rem;
+      color: var(--color-gray);
+    }
+
+    .empty-state p {
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .empty-state small {
+      display: block;
+      font-size: 0.9rem;
+      color: var(--color-gray);
+    }
+
+    .habits-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .habit-card {
+      background: linear-gradient(135deg, rgba(248, 250, 252, 0.5) 0%, rgba(241, 245, 249, 0.5) 100%);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      padding: 1.25rem;
+      transition: all 0.3s;
+    }
+
+    .habit-card:hover {
+      transform: translateX(4px);
+      box-shadow: 0 4px 12px rgba(50, 69, 255, 0.1);
+    }
+
+    .habit-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      margin-bottom: 0.75rem;
+    }
+
+    .habit-header h3 {
+      font-size: 1.1rem;
+      color: var(--color-dark);
+    }
+
+    .btn-delete {
+      background: none;
+      border: none;
+      font-size: 1.25rem;
+      cursor: pointer;
+      transition: transform 0.2s;
+      padding: 0;
+    }
+
+    .btn-delete:hover {
+      transform: scale(1.2);
+    }
+
+    .habit-description {
+      color: var(--color-gray);
+      font-size: 0.9rem;
+      margin-bottom: 1rem;
+      line-height: 1.4;
+    }
+
+    .habit-meta {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 0.35rem 0.75rem;
+      background: rgba(50, 69, 255, 0.1);
+      color: var(--color-primary);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .badge-date {
+      background: rgba(100, 116, 139, 0.1);
+      color: var(--color-gray);
+    }
+
+    .btn-edit {
+      display: inline-block;
+      padding: 0.5rem 1rem;
+      background: white;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      text-decoration: none;
+      font-size: 0.9rem;
+      color: var(--color-primary);
+      transition: all 0.3s;
+      text-align: center;
+    }
+
+    .btn-edit:hover {
+      background: var(--color-light);
+      border-color: var(--color-primary);
+    }
+
+    .delete-form {
+      all: unset;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 768px) {
+      main {
+        padding: 1rem;
+      }
+
+      .content-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+
+      .navbar-menu {
+        gap: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .header h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</body>
+</html>
